@@ -116,7 +116,9 @@ public class GetTestDataMethodObject {
     private void attachFilesForReport(final String className, final FilePath reportFile, final FilePath target)
             throws IOException, InterruptedException {
         final FilePath testDir = reportFile.getParent().child(className);
+        LOG.fine("Probing for attachments folder: " + testDir.absolutize());
         if (testDir.exists()) {
+            LOG.fine("Attachments folder exists. Copying...");
             target.mkdirs();
             if (testDir.copyRecursiveTo(target) > 0) {
                 DirectoryScanner d = new DirectoryScanner();
@@ -127,6 +129,10 @@ public class GetTestDataMethodObject {
                 Map<String, List<String>> tests = attachments.getOrDefault(className, new HashMap<String, List<String>>());
                 tests.put("", new ArrayList<String>(Arrays.asList(d.getIncludedFiles())));
                 attachments.put(className, tests);
+
+                LOG.fine("Attached files " + String.join(",", d.getIncludedFiles()) + " to " + className);
+            } else {
+                LOG.fine("No files copied.");
             }
         }
     }
